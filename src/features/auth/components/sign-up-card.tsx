@@ -1,5 +1,7 @@
 "use client";
 
+import { useAuthActions } from "@convex-dev/auth/react";
+import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -22,9 +24,42 @@ interface SignUpCardProps {
 };
 
 export function SignUpCard({ setState }: SignUpCardProps) {
+    const { signIn } = useAuthActions();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+    const [pending, setPending] = useState(false);
+
+    function onPasswordSignUp(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+
+            return;
+        }
+
+        setPending(true);
+
+        signIn("password", { email, password, flow: "signUp" })
+            .catch(() => {
+                setError("Something went wrong");
+            })
+            .finally(() => {
+                setPending(false);
+            });
+    }
+
+    function onProviderSignUp(value: "github" | "google") {
+        setPending(true);
+
+        signIn(value)
+            .finally(() => {
+                setPending(false);
+            });
+    }
 
     return (
         <Card className="w-full h-full p-8">
@@ -38,14 +73,22 @@ export function SignUpCard({ setState }: SignUpCardProps) {
                 Use your email or another service to continue
             </CardDescription>
 
+            {!!error && (
+                <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mt-4">
+                    <TriangleAlert className="size-4" />
+
+                    <p>{error}</p>
+                </div>
+            )}
+
             <CardContent className="pt-5 px-0 pb-0">
-                <form className="space-y-2.5">
+                <form onSubmit={onPasswordSignUp} className="space-y-2.5">
                     <Input
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
-                        disabled={false}
+                        disabled={pending}
                         required
                     />
 
@@ -54,7 +97,7 @@ export function SignUpCard({ setState }: SignUpCardProps) {
                         placeholder="Password"
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
-                        disabled={false}
+                        disabled={pending}
                         required
                     />
 
@@ -63,7 +106,7 @@ export function SignUpCard({ setState }: SignUpCardProps) {
                         placeholder="Confirm password"
                         value={confirmPassword}
                         onChange={(event) => setConfirmPassword(event.target.value)}
-                        disabled={false}
+                        disabled={pending}
                         required
                     />
 
@@ -71,7 +114,7 @@ export function SignUpCard({ setState }: SignUpCardProps) {
                         type="submit"
                         className="w-full"
                         size="lg"
-                        disabled={false}
+                        disabled={pending}
                     >
                         Continue
                     </Button>
@@ -82,10 +125,10 @@ export function SignUpCard({ setState }: SignUpCardProps) {
                 <div className="flex flex-col gap-y-2.5 pt-5">
                     <Button
                         className="w-full relative"
-                        onClick={() => { }}
+                        onClick={() => onProviderSignUp("google")}
                         variant="outline"
                         size="lg"
-                        disabled={false}
+                        disabled={pending}
                     >
                         <FcGoogle className="size-5 absolute top-3 left-2.5" />
 
@@ -94,10 +137,10 @@ export function SignUpCard({ setState }: SignUpCardProps) {
 
                     <Button
                         className="w-full relative"
-                        onClick={() => { }}
+                        onClick={() => onProviderSignUp("github")}
                         variant="outline"
                         size="lg"
-                        disabled={false}
+                        disabled={pending}
                     >
                         <FaGithub className="size-5 absolute top-3 left-2.5" />
 
