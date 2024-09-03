@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="#DF1E5A">
+    <g transform="rotate(165 25 25)">
+        <!-- Vertical hash lines -->
+        <rect x="13" y="2" width="8" height="46" rx="4" />
+        <rect x="29" y="2" width="8" height="46" rx="4" />
+        <!-- Horizontal hash lines -->
+        <rect x="2" y="13" width="46" height="8" rx="4" />
+        <rect x="2" y="29" width="46" height="8" rx="4" />
+    </g>
+</svg>
