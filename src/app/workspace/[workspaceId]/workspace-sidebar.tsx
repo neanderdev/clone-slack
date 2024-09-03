@@ -1,17 +1,30 @@
-import { AlertTriangle, Loader } from "lucide-react";
+import {
+    AlertTriangle,
+    HashIcon,
+    Loader,
+    MessageSquareText,
+    SendHorizontal,
+} from "lucide-react";
 
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 
-import { useCurrentMember } from "@/features/members/use-current-member";
+import { useGetChannels } from "@/features/channels/api/use-get-channels";
+import { useCurrentMember } from "@/features/members/api/use-current-member";
+import { useGetMembers } from "@/features/members/api/use-get-members";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 
+import { SidebarItem } from "./sidebar-item";
+import { UserItem } from "./user-item";
 import { WorkspaceHeader } from "./workspace-header";
+import { WorkspaceSection } from "./workspace-section";
 
 export function WorkspaceSidebar() {
     const workspaceId = useWorkspaceId();
 
     const { data: member, isLoading: memberLoading } = useCurrentMember({ workspaceId });
     const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({ id: workspaceId });
+    const { data: channels, isLoading: channelsLoading } = useGetChannels({ workspaceId });
+    const { data: members, isLoading: membersLoading } = useGetMembers({ workspaceId });
 
     if (workspaceLoading || memberLoading) {
         return (
@@ -39,6 +52,50 @@ export function WorkspaceSidebar() {
                 workspace={workspace}
                 isAdmin={member.role === "admin"}
             />
+
+            <div className="flex flex-col px-2 mt-3">
+                <SidebarItem
+                    label="Threads"
+                    icon={MessageSquareText}
+                    id="threads"
+                />
+
+                <SidebarItem
+                    label="Drafts & Sent"
+                    icon={SendHorizontal}
+                    id="drafts"
+                />
+            </div>
+
+            <WorkspaceSection
+                label="Channels"
+                hint="New channel"
+                onNew={() => { }}
+            >
+                {channels?.map((channel, index) => (
+                    <SidebarItem
+                        key={index}
+                        label={channel.name}
+                        icon={HashIcon}
+                        id={channel._id}
+                    />
+                ))}
+            </WorkspaceSection>
+
+            <WorkspaceSection
+                label="Direct Messages"
+                hint="New direct message"
+                onNew={() => { }}
+            >
+                {members?.map((member, index) => (
+                    <UserItem
+                        key={index}
+                        id={member._id}
+                        label={member.user.name}
+                        image={member.user.image}
+                    />
+                ))}
+            </WorkspaceSection>
         </div>
     );
 }
