@@ -9,6 +9,7 @@ import {
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
+import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
@@ -20,6 +21,8 @@ import { WorkspaceSection } from "./workspace-section";
 
 export function WorkspaceSidebar() {
     const workspaceId = useWorkspaceId();
+
+    const [_open, setOpen] = useCreateChannelModal();
 
     const { data: member, isLoading: memberLoading } = useCurrentMember({ workspaceId });
     const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({ id: workspaceId });
@@ -70,7 +73,7 @@ export function WorkspaceSidebar() {
             <WorkspaceSection
                 label="Channels"
                 hint="New channel"
-                onNew={() => { }}
+                onNew={member.role === "admin" ? () => setOpen(true) : undefined}
             >
                 {channels?.map((channel, index) => (
                     <SidebarItem
@@ -85,7 +88,7 @@ export function WorkspaceSidebar() {
             <WorkspaceSection
                 label="Direct Messages"
                 hint="New direct message"
-                onNew={() => { }}
+            // onNew={() => { }}
             >
                 {members?.map((member, index) => (
                     <UserItem
