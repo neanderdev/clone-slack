@@ -104,7 +104,7 @@ export function SignInCard({ setState }: SignInCardProps) {
                     </Button>
                 </form>
 
-                <Separator />
+                <Separator className="mt-4" />
 
                 <div className="flex flex-col gap-y-2.5 pt-5">
                     <Button
