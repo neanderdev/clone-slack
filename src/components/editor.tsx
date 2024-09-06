@@ -7,6 +7,7 @@ import { PiTextAa } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
 
+import { EmojiPopover } from "./emoji-popover";
 import { Hint } from "./hint";
 import { Button } from "./ui/button";
 
@@ -133,6 +134,12 @@ export function Editor({
         }
     }
 
+    function onEmojiSelect(emoji: any) {
+        const quill = quillRef.current;
+
+        quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+    }
+
     const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
 
     return (
@@ -152,16 +159,15 @@ export function Editor({
                         </Button>
                     </Hint>
 
-                    <Hint label="Emoji">
+                    <EmojiPopover onEmojiSelect={onEmojiSelect}>
                         <Button
-                            onClick={() => { }}
                             variant="ghost"
                             size="iconSm"
                             disabled={disabled}
                         >
                             <Smile className="size-4" />
                         </Button>
-                    </Hint>
+                    </EmojiPopover>
 
                     {variant === "create" && (
                         <Hint label="Image">
@@ -216,11 +222,18 @@ export function Editor({
                 </div>
             </div>
 
-            <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
-                <p>
-                    <strong>Shift + Return</strong> to add a new line
-                </p>
-            </div>
+            {variant === "create" && (
+                <div
+                    className={cn(
+                        "p-2 text-[10px] text-muted-foreground flex justify-end opacity-0 transition",
+                        !isEmpty && "opacity-100",
+                    )}
+                >
+                    <p>
+                        <strong>Shift + Return</strong> to add a new line
+                    </p>
+                </div>
+            )}
         </div>
     );
 }
