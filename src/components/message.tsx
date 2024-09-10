@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import { Hint } from "./hint";
 import { Thumbnail } from "./thumbnail";
+import { Toolbar } from "./toolbar";
 
 const Renderer = dynamic(() => import("./renderer").then((mod) => mod.Renderer), { ssr: false });
 
@@ -80,6 +81,18 @@ export function Message({
                         ) : null}
                     </div>
                 </div>
+
+                {!isEditing && (
+                    <Toolbar
+                        isAuthor={isAuthor}
+                        isPending={false}
+                        handleEdit={() => setEditingId(id)}
+                        handleThread={() => { }}
+                        handleDelete={() => { }}
+                        handleReaction={() => { }}
+                        hideThreadButton={hideThreadButton}
+                    />
+                )}
             </div>
         );
     }
@@ -128,6 +141,18 @@ export function Message({
                     ) : null}
                 </div>
             </div>
+
+            {!isEditing && (
+                <Toolbar
+                    isAuthor={isAuthor}
+                    isPending={false}
+                    handleEdit={() => setEditingId(id)}
+                    handleThread={() => { }}
+                    handleDelete={() => { }}
+                    handleReaction={() => { }}
+                    hideThreadButton={hideThreadButton}
+                />
+            )}
         </div>
     );
 }
