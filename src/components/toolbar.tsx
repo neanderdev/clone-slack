@@ -44,6 +44,7 @@ export function Toolbar({
                         <Button
                             variant="ghost"
                             size="iconSm"
+                            onClick={handleThread}
                             disabled={isPending}
                         >
                             <MessageSquareTextIcon className="size-4" />
@@ -56,6 +57,7 @@ export function Toolbar({
                         <Button
                             variant="ghost"
                             size="iconSm"
+                            onClick={handleEdit}
                             disabled={isPending}
                         >
                             <Pencil className="size-4" />
@@ -68,6 +70,7 @@ export function Toolbar({
                         <Button
                             variant="ghost"
                             size="iconSm"
+                            onClick={handleDelete}
                             disabled={isPending}
                         >
                             <Trash className="size-4" />
