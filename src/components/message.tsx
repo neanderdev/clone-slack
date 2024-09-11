@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
 import { useUpdateMessage } from "@/features/messages/api/use-update-message";
+import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
 
 import { useConfirm } from "@/hooks/use-confirm";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { Doc, Id } from "../../convex/_generated/dataModel";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import { Hint } from "./hint";
+import { Reactions } from "./reactions";
 import { Thumbnail } from "./thumbnail";
 import { Toolbar } from "./toolbar";
 
@@ -25,7 +27,7 @@ interface MessageProps {
     authorImage?: string;
     authorName?: string;
     isAuthor: boolean;
-    reactions?: Array<
+    reactions: Array<
         Omit<Doc<"reactions">, "memberId"> & {
             count: number;
             memberIds: Id<"members">[];
@@ -74,8 +76,9 @@ export function Message({
 
     const { mutate: updateMessage, isPending: isUpdatingMessage } = useUpdateMessage();
     const { mutate: removeMessage, isPending: isRemovingMessage } = useRemoveMessage();
+    const { mutate: toggleReaction, isPending: isTogglingReaction } = useToggleReaction();
 
-    const isPending = isUpdatingMessage || isRemovingMessage;
+    const isPending = isUpdatingMessage || isRemovingMessage || isTogglingReaction;
 
     function handleUpdate({ body }: { body: string }) {
         updateMessage({ id, body }, {
@@ -104,6 +107,17 @@ export function Message({
             onError: () => {
                 toast.error("Failed to delete message");
             },
+        });
+    }
+
+    function handleReaction(value: string) {
+        toggleReaction({
+            messageId: id,
+            value,
+        }, {
+            onError: () => {
+                toast.error("Failed to toggle reaction");
+            }
         });
     }
 
@@ -141,6 +155,11 @@ export function Message({
                                         (edited)
                                     </span>
                                 ) : null}
+
+                                <Reactions
+                                    data={reactions}
+                                    onChange={handleReaction}
+                                />
                             </div>
                         )}
                     </div>
@@ -152,7 +171,7 @@ export function Message({
                             handleEdit={() => setEditingId(id)}
                             handleThread={() => { }}
                             handleDelete={handleRemove}
-                            handleReaction={() => { }}
+                            handleReaction={handleReaction}
                             hideThreadButton={hideThreadButton}
                         />
                     )}
@@ -223,6 +242,11 @@ export function Message({
                                     (edited)
                                 </span>
                             ) : null}
+
+                            <Reactions
+                                data={reactions}
+                                onChange={handleReaction}
+                            />
                         </div>
                     )}
                 </div>
@@ -234,7 +258,7 @@ export function Message({
                         handleEdit={() => setEditingId(id)}
                         handleThread={() => { }}
                         handleDelete={handleRemove}
-                        handleReaction={() => { }}
+                        handleReaction={handleReaction}
                         hideThreadButton={hideThreadButton}
                     />
                 )}
