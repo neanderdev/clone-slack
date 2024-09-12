@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import { Hint } from "./hint";
 import { Reactions } from "./reactions";
+import { ThreadBar } from "./thread-bar";
 import { Thumbnail } from "./thumbnail";
 import { Toolbar } from "./toolbar";
 
@@ -44,6 +45,7 @@ interface MessageProps {
     hideThreadButton?: boolean;
     threadCount?: number;
     threadImage?: string;
+    threadName?: string;
     threadTimestamp?: number;
 };
 
@@ -68,6 +70,7 @@ export function Message({
     hideThreadButton,
     threadCount,
     threadImage,
+    threadName,
     threadTimestamp
 }: MessageProps) {
     const { parentMessageId, onOpenMessage, onClose } = usePanel();
@@ -165,6 +168,14 @@ export function Message({
                                     data={reactions}
                                     onChange={handleReaction}
                                 />
+
+                                <ThreadBar
+                                    count={threadCount}
+                                    image={threadImage}
+                                    timestamp={threadTimestamp}
+                                    name={threadName}
+                                    onClick={() => onOpenMessage(id)}
+                                />
                             </div>
                         )}
                     </div>
@@ -251,6 +262,14 @@ export function Message({
                             <Reactions
                                 data={reactions}
                                 onChange={handleReaction}
+                            />
+
+                            <ThreadBar
+                                count={threadCount}
+                                image={threadImage}
+                                timestamp={threadTimestamp}
+                                name={threadName}
+                                onClick={() => onOpenMessage(id)}
                             />
                         </div>
                     )}
